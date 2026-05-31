@@ -1,0 +1,93 @@
+"""Thin TCP client for the Roland V-Mixer / M-5000 remote protocol (port 8023),
+plus the high-level scan that builds the slot->name table.
+
+Line-oriented telnet: send "CMD;\r\n", read until a ';'-terminated reply or
+"OK". Read-only (queries only). Pairs the pure proto + join modules with a real
+socket.
+"""
+import socket
+from .proto import frame_query, parse_reply
+from .join import LabelJoin
+
+DEFAULT_PORT = 8023
+
+
+class MixerClient:
+    def __init__(self, host, port=DEFAULT_PORT, timeout=5.0):
+        self.host = host
+        self.port = port
+        self.timeout = timeout
+        self._sock = None
+        self._buf = b""
+
+    def connect(self):
+        self._sock = socket.create_connection((self.host, self.port), self.timeout)
+        self._sock.settimeout(self.timeout)
+
+    def close(self):
+        if self._sock:
+            try:
+                self._sock.sendall(b"QUIT;\r\n")
+            except OSError:
+                pass
+            self._sock.close()
+            self._sock = None
+
+    def _read_reply(self):
+        """Read until a ';'-terminated reply or a bare 'OK' line."""
+        while True:
+            # is a complete reply already buffered?
+            for term in (b";", b"\n"):
+                if term in self._buf:
+                    line, _, self._buf = self._buf.partition(term)
+                    text = line.decode("ascii", "replace").strip()
+                    if not text:
+                        continue
+                    return parse_reply(text + (";" if term == b";" else ""))
+            data = self._sock.recv(1024)
+            if not data:
+                raise ConnectionError("mixer closed connection")
+            self._buf += data
+
+    def query(self, code, target=None):
+        """Send a query and return the parsed Reply (skips ack-only lines)."""
+        self._sock.sendall(frame_query(code, target) + b"\r\n")
+        r = self._read_reply()
+        while r.is_ack:        # ignore stray acks
+            r = self._read_reply()
+        return r
+
+    def version(self):
+        r = self.query("VRQ")
+        return ",".join(r.args)
+
+    def channel_name(self, channel):
+        r = self.query("CNQ", channel)
+        return r.args[0] if r.args else ""
+
+    def input_patch(self, channel):
+        r = self.query("PIQ", channel)
+        return r.args[0] if r.args else "OFF"
+
+    def output_patch(self, slot):
+        r = self.query("POQ", slot)
+        return r.args[0] if r.args else "OFF"
+
+
+def scan_labels(host, port, input_channels, output_slots=None):
+    """Connect, scan names + input/output patch, return the slot->name table."""
+    c = MixerClient(host, port)
+    c.connect()
+    try:
+        j = LabelJoin()
+        for ch in input_channels:
+            j.observe_name(ch, c.channel_name(ch))
+            j.observe_patch(ch, c.input_patch(ch))
+        for slot in (output_slots or []):
+            source = c.output_patch(slot)
+            if source and source != "OFF":
+                j.observe_name(source, c.channel_name(source))
+                j.observe_output_patch(slot, source)
+        return j.slot_to_name()
+    finally:
+        c.close()
