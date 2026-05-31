@@ -92,6 +92,12 @@ here.
 - Roland V-Mixer / M-5000 RS-232C / Telnet remote-control reference — the
   documented protocol implemented here.
 
+## API reference
+
+The public API carries docstrings; generate browsable HTML with `make docs`
+(needs [pdoc](https://pdoc.dev), output in `site/`). CI publishes it to GitHub
+Pages on each `v*` tag.
+
 ## License
 
 GPL-3.0-or-later. Copyright (C) 2026 Pau Aliagas. See [LICENSE](LICENSE) and

@@ -13,7 +13,14 @@ import threading
 
 
 class MixerSim:
+    """In-process TCP stand-in for a Roland mixer's control port.
+
+    Answers the VRQ/CNQ/PIQ/POQ query subset framed like a real desk, so the
+    client and join logic can be exercised end-to-end without hardware.
+    """
+
     def __init__(self, names=None, in_patch=None, out_patch=None, version="1.010"):
+        """Seed the simulated state: channel names, input patch, output patch."""
         self.names = dict(names or {})        # channel id -> name (caller pads)
         self.in_patch = dict(in_patch or {})  # channel id -> RAIn/RBIn/OFF
         self.out_patch = dict(out_patch or {})# RAOn -> source channel
@@ -58,6 +65,7 @@ class MixerSim:
                     conn.sendall((self._reply(cmd + ";") + "\r\n").encode())
 
     def start(self):
+        """Bind an ephemeral localhost port, serve in a daemon thread, return the port."""
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self._sock.bind(("127.0.0.1", 0))
@@ -68,6 +76,7 @@ class MixerSim:
         return self.port
 
     def stop(self):
+        """Close the listening socket and stop serving."""
         try:
             if self._sock:
                 self._sock.close()

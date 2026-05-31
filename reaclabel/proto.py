@@ -26,6 +26,8 @@ def frame_query(code, target=None):
 
 @dataclass
 class Reply:
+    """One parsed reply from the mixer (or a synthesized ack / error marker)."""
+
     raw: str
     code: str = ""        # 2-letter category, e.g. "CN", "PI", "VR"
     action: str = ""      # 3rd letter: "S" (status), "C", "Q"

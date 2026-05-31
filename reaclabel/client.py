@@ -16,7 +16,14 @@ DEFAULT_PORT = 8023
 
 
 class MixerClient:
+    """Read-only TCP client for one Roland mixer's remote-control port.
+
+    Holds a single connection (mixers accept one control client at a time) and
+    exposes typed query helpers; it never sends control/set commands.
+    """
+
     def __init__(self, host, port=DEFAULT_PORT, timeout=5.0):
+        """Configure the target; call connect() to open the socket."""
         self.host = host
         self.port = port
         self.timeout = timeout
@@ -24,10 +31,12 @@ class MixerClient:
         self._buf = b""
 
     def connect(self):
+        """Open the TCP connection to the mixer."""
         self._sock = socket.create_connection((self.host, self.port), self.timeout)
         self._sock.settimeout(self.timeout)
 
     def close(self):
+        """Send QUIT and close the connection (best-effort)."""
         if self._sock:
             try:
                 self._sock.sendall(b"QUIT;\r\n")
@@ -61,18 +70,22 @@ class MixerClient:
         return r
 
     def version(self):
+        """Return the mixer firmware version string (VRQ -> VRS)."""
         r = self.query("VRQ")
         return ",".join(r.args)
 
     def channel_name(self, channel):
+        """Return an input channel's name (CNQ), or '' if unset."""
         r = self.query("CNQ", channel)
         return r.args[0] if r.args else ""
 
     def input_patch(self, channel):
+        """Return the source slot feeding a channel (PIQ), e.g. RAI22; 'OFF' if unpatched."""
         r = self.query("PIQ", channel)
         return r.args[0] if r.args else "OFF"
 
     def output_patch(self, slot):
+        """Return the source feeding a REAC output slot (POQ); 'OFF' if unpatched."""
         r = self.query("POQ", slot)
         return r.args[0] if r.args else "OFF"
 

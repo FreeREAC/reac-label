@@ -21,6 +21,7 @@ MODEL_INPUTS = {"m200": 32, "m200i": 32, "m300": 32, "m380": 48,
 
 
 def main(argv=None):
+    """Parse args, scan the mixer (or simulator), and print/emit the slot->name table."""
     ap = argparse.ArgumentParser(prog="reac-label")
     ap.add_argument("--host", help="mixer IP (omit with --sim)")
     ap.add_argument("--port", type=int, default=DEFAULT_PORT)

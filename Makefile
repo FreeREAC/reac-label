@@ -5,4 +5,6 @@ test:
 	python3 -m unittest discover tests -v
 demo:
 	python3 -m reaclabel --sim
-.PHONY: test demo
+docs:
+	python3 -m pdoc -o site reaclabel
+.PHONY: test demo docs

@@ -11,12 +11,20 @@ tap keys on. Pure: feed it observed values, read the table.
 
 
 class LabelJoin:
+    """Accumulates mixer observations and joins them into a slot -> name table.
+
+    Feed channel names (CNS) and input/output patch (PIS/POS); read the result
+    with slot_to_name().
+    """
+
     def __init__(self):
+        """Start with empty name/patch maps."""
         self._name = {}          # channel id -> name (raw, may be padded/blank)
         self._patch = {}         # channel id -> input slot token (RAIn/RBIn/OFF)
         self._out_patch = {}     # output slot token (RAOn) -> source channel id
 
     def observe_name(self, channel, name):
+        """Record a channel's name (CNS: channel -> name)."""
         self._name[channel] = name
 
     def observe_patch(self, channel, slot):
