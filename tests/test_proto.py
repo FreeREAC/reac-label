@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 Pau Aliagas <linuxnow@gmail.com>
+
 """Tests for the Roland V-Mixer remote protocol framing/parsing.
 
 Grounded in real VMXProxy simrc.txt pairs:

@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 Pau Aliagas <linuxnow@gmail.com>
+
 """Tests for the slot->name join (the core value).
 
 PIS gives channel->slot (I22 -> RAI22); CNS gives channel->name. We invert+join

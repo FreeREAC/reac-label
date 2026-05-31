@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 Pau Aliagas <linuxnow@gmail.com>
+
 """End-to-end: client queries the mixer simulator over a real TCP socket and
 produces a slot->name table. Proves query -> parse -> join with no hardware."""
 import unittest

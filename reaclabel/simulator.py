@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 Pau Aliagas <linuxnow@gmail.com>
+
 """A minimal Roland V-Mixer telnet simulator (stdlib only).
 
 Answers the query subset reac-label uses (VRQ, CNQ, PIQ, POQ), framed exactly

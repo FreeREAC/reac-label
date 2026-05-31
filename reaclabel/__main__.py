@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 Pau Aliagas <linuxnow@gmail.com>
+
 """reac-label CLI: scan a Roland V-Mixer/M-5000 and print/emit a slot->name map.
 
   python3 -m reaclabel --host <mixer_ip> [--port 8023] [--inputs 48]

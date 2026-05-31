@@ -1,0 +1,44 @@
+reac-label
+Copyright (C) 2026 Pau Aliagas <linuxnow@gmail.com>
+
+Licensed under GPL-3.0-or-later (see LICENSE).
+
+reac-label queries a Roland V-Mixer / M-5000 over its remote-control protocol
+and builds a REAC-slot -> channel-name table for reac-aes67.
+
+## Third-party code and references
+
+reac-label is an original, stdlib-only Python implementation. It contains no
+code copied from any upstream project. The items below are credited because
+they grounded the protocol parsing or supplied factual data.
+
+### Code
+
+None. All source files in this repository are independently authored. In
+particular, `reaclabel/proto.py` (protocol framing and reply parsing) and
+`reaclabel/simulator.py` (a TCP query simulator) are original implementations
+of a documented wire format and copy no upstream code.
+
+### Reference data used to ground tests and parsing
+
+- JamesCC/VMXProxyPy -- LGPL-3.0 / GPL-3.0, Copyright (C) JamesCC.
+  Its `simrc.txt` sample command/response pairs (e.g. `CNS:I1,"NoName";`,
+  `PIS:I22,RAI22;`) were used as *data* to ground the protocol-parsing tests
+  and the simulator's reply framing in `reaclabel/proto.py` and
+  `reaclabel/simulator.py`. No VMXProxyPy code is included or derived.
+- bitfocus/companion-module-roland-m5000 -- MIT, Copyright (c) the
+  companion-module-roland-m5000 contributors. Per-model channel counts (factual
+  data only) informed the `--model` input defaults. No code is included or
+  derived.
+
+### Protocol and standard facts referenced (no copyright claimed)
+
+The following document only the facts of a protocol or specification; reac-label
+references those facts and claims no copyright over them:
+
+- Roland V-Mixer / M-5000 RS-232C / Telnet remote-control reference
+  (documentation (C) Roland Corporation) -- the command/reply wire format
+  (3-letter CODE + `:` + CSV args + `;`, STX-prefixed serial form vs. telnet
+  `OK` ack, `ERR:<n>;` errors) implemented in `reaclabel/proto.py` and answered
+  by `reaclabel/simulator.py`. Only the documented protocol facts are used; no
+  Roland code or text is included.

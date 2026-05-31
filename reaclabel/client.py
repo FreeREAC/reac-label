@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 Pau Aliagas <linuxnow@gmail.com>
+
 """Thin TCP client for the Roland V-Mixer / M-5000 remote protocol (port 8023),
 plus the high-level scan that builds the slot->name table.
 

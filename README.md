@@ -72,3 +72,27 @@ M-480 = 48, M-5000 = 128. Override with `--inputs N`.
 - Roland V-Mixer RS-232C / Telnet reference (the protocol).
 - `bitfocus/companion-module-roland-m5000`, `JamesCC/VMXProxyPy` (open impls;
   the latter ships the protocol PDF + a simulator).
+
+## Acknowledgements
+
+reac-label is original, stdlib-only Python and includes no third-party code. It
+does, however, stand on prior reverse-engineering and documentation of the
+Roland V-Mixer / M-5000 remote-control protocol: the Roland RS-232C / Telnet
+remote-control reference documents the command/reply wire format, while two open
+projects supplied data (not code) that grounded the parser, tests, and the
+built-in simulator. Per-model channel counts come from a third project as plain
+facts. The protocol and specification facts themselves carry no copyright claim
+here.
+
+- [JamesCC/VMXProxyPy](https://github.com/JamesCC/VMXProxyPy) (LGPL-3.0 /
+  GPL-3.0) — its `simrc.txt` sample command/response pairs grounded the
+  protocol-parsing tests and simulator reply framing (used as data).
+- [bitfocus/companion-module-roland-m5000](https://github.com/bitfocus/companion-module-roland-m5000)
+  (MIT) — per-model channel counts (factual data) for the `--model` defaults.
+- Roland V-Mixer / M-5000 RS-232C / Telnet remote-control reference — the
+  documented protocol implemented here.
+
+## License
+
+GPL-3.0-or-later. Copyright (C) 2026 Pau Aliagas. See [LICENSE](LICENSE) and
+[NOTICE](NOTICE).

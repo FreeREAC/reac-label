@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 Pau Aliagas <linuxnow@gmail.com>
+
 """Slot -> name join — the core value of reac-label.
 
 The mixer exposes channel->slot (PIS: I22 -> RAI22) and channel->name

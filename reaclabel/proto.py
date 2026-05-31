@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 Pau Aliagas <linuxnow@gmail.com>
+
 """Roland V-Mixer / M-5000 remote-control protocol — framing & parsing (pure).
 
 Wire format (telnet over TCP 8023): a command is 3 uppercase letters, an
