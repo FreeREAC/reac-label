@@ -1,6 +1,6 @@
 # reac-label
 
-Read-only **labeller** for [`reac-aes67`](https://github.com/linuxnow/reac-aes67):
+Read-only **labeller** for [`reac-aes67`](https://github.com/FreeREAC/reac-aes67):
 queries a Roland **V-Mixer / M-5000** over its remote-control protocol (TCP
 8023) and builds a **REAC-slot → channel-name** table, so the AES67 channels
 reac-aes67 emits show the desk's names ("Bass") instead of bare slot numbers.
@@ -8,8 +8,8 @@ reac-aes67 emits show the desk's names ("Bass") instead of bare slot numbers.
 It supplies the one thing the passive REAC tap **cannot** see — the
 slot↔channel↔name mapping, which lives in the mixer's patch, not on the wire.
 
-Personal audio project (lives under the `linuxnow` org alongside `reac-aes67`,
-`reac-tools`). Python, **stdlib only**, no dependencies.
+Part of [FreeREAC](https://github.com/FreeREAC), alongside `reac-aes67` and
+`reac-tools`. Python, **stdlib only**, no dependencies.
 
 ## How it works
 
