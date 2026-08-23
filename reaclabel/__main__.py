@@ -15,7 +15,8 @@ import json
 import sys
 from .client import MixerClient, scan_labels, DEFAULT_PORT
 
-# per-model input counts (verified from the Companion mixerconfig.json)
+# per-model input counts (verified from the Companion mixerconfig.json).
+# m5000 sizes a name scan only — the M-5000 answers PIQ/POQ empty.
 MODEL_INPUTS = {"m200": 32, "m200i": 32, "m300": 32, "m380": 48,
                 "m400": 48, "m480": 48, "m5000": 128}
 

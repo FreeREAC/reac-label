@@ -7,6 +7,10 @@ plus the high-level scan that builds the slot->name table.
 Line-oriented telnet: send "CMD;\r\n", read until a ';'-terminated reply or
 "OK". Read-only (queries only). Pairs the pure proto + join modules with a real
 socket.
+
+On an M-5000 the patch queries (PIQ/POQ) answer empty while VRQ and RCQ answer
+normally: routing is not exposed on the ASCII LAN protocol, so scan_labels comes
+back with every channel unpatched. That is the desk, not a fault here.
 """
 import socket
 from .proto import frame_query, parse_reply
