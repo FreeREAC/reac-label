@@ -1,15 +1,15 @@
 # reac-label
 
 Read-only **labeller** for [`reac-aes67`](https://github.com/FreeREAC/reac-aes67):
-queries a Roland **V-Mixer / M-5000** over its remote-control protocol (TCP
-8023) and builds a **REAC-slot → channel-name** table, so the AES67 channels
-reac-aes67 emits show the desk's names ("Bass") instead of bare slot numbers.
+queries a Roland **V-Mixer** over its remote-control protocol (TCP 8023) and
+builds a **REAC-slot → channel-name** table, so the AES67 channels reac-aes67
+emits show the desk's names ("Bass") instead of bare slot numbers.
 
-It supplies the one thing the passive REAC tap **cannot** see — the
-slot↔channel↔name mapping, which lives in the mixer's patch, not on the wire.
+It supplies what the passive REAC tap does not decode — the slot↔channel↔name
+mapping, which lives in the mixer's patch, not in the audio frame.
 
-Part of [FreeREAC](https://github.com/FreeREAC), alongside `reac-aes67` and
-`reac-tools`. Python, **stdlib only**, no dependencies.
+Part of [FreeREAC](https://github.com/FreeREAC) — *REAC Exposed Audio
+Communications*. Python, **stdlib only**, no dependencies.
 
 ## How it works
 
@@ -31,6 +31,36 @@ mixer (TCP 8023)
   → CLI/JSON slot->name table for reac-aes67 to stamp on the AES67 labels
 ```
 
+## Where this fits
+
+**Still needed, narrowly.** reac-label has a job on exactly one path: a **Roland
+desk is the REAC master** and something listens to that segment passively. There
+the desk owns the patch and the names, nothing on the audio wire carries them,
+and the control port is the only source.
+
+It has **no job on the openmixer / reac-pw path**. When reac-pw masters a segment
+it drives the stageboxes directly, and the console session already holds the
+channel roster, the patch and the names; labels come from the session. Pointing
+reac-label at that path would add a second, staler declaration of the same thing.
+
+Per desk:
+
+- **V-Mixer — M-200i / M-300 / M-380 / M-400 / M-480.** The target. `PIQ` / `POQ`
+  return the `RAI<n>` / `RAO<n>` patch tokens the join is keyed on.
+- **M-5000 — the patch is not on this port.** `PIQ` / `POQ` come back **empty**:
+  routing is not exposed over the ASCII LAN protocol. Measured on a live M-5000
+  on 2026-06-07, on a connection where the banner, `VRQ` and `RCQ` (REAC link
+  status) all answered normally, so it is the routing plane that is absent, not
+  the session. With no patch side the join has nothing to invert, so reac-label
+  cannot build a slot→name table for an M-5000 over TCP 8023 — its routing plane
+  is reachable only over RS-232C or DIN MIDI. `--model m5000` sizes a name scan
+  and nothing more.
+
+**A label means the desk patched that slot, not that the slot carries audio.** A
+stagebox channel stays digitally silent until a head-amp commit promotes its
+staged record into the box's active table; a patched slot whose channel was never
+committed is patched and silent. Do not read this table as an active-channel map.
+
 ## Try it (no hardware)
 
 A built-in mixer **simulator** answers the query subset exactly like a real desk
@@ -46,8 +76,8 @@ python3 -m reaclabel --sim --probe   # VRQ/CNQ/PIQ sample replies
 ## Against a real mixer
 
 ```sh
-# confirm transport/model first (M-5000 native TCP; M-200i telnet must be
-# enabled in its LAN menu; older V-Mixers need a serial<->TCP bridge / VMXProxy):
+# confirm transport/model first (M-200i telnet must be enabled in its LAN menu;
+# older V-Mixers need a serial<->TCP bridge / VMXProxy):
 python3 -m reaclabel --host <mixer_ip> --probe
 
 # full scan -> JSON for reac-aes67 to read:
@@ -57,6 +87,9 @@ python3 -m reaclabel --host <mixer_ip> --model m480 --outputs 40 --json slots.js
 Per-model input counts are built in (`--model`): M-200/M-300 = 32, M-380/M-400/
 M-480 = 48, M-5000 = 128. Override with `--inputs N`.
 
+A scan that returns names but no slots is the M-5000 case above: `PIQ` answered
+empty, so every channel looks unpatched.
+
 ## Constraints & notes
 
 - **Read-only.** reac-label never sets/controls the mixer.
@@ -64,8 +97,20 @@ M-480 = 48, M-5000 = 128. Override with `--inputs N`.
   run this alongside an iPad Remote / RCS session (or front it with VMXProxy).
 - **No auth** on the mixer's control port — keep it on a trusted segment.
 - **Poll, no push:** names are fetched per scan; re-run to pick up renames.
-- **M-5000 (OHRCA)** may use different patch tokens than the V-Mixer `RAI/RAO`;
-  confirm with `--probe` on the real unit (open item).
+- **UNVERIFIED — whether the REAC wire carries the names anyway.** The REAC
+  control plane has a scene-transfer channel: an op-0101 header declaring 0x22c8
+  (8904) bytes, then 341 op-0100 chunks of 26 bytes, then an op-0102 final of 14;
+  the body validates on three 4-byte compares, `1234` at +0x000, `SYSP` at +0x368
+  and `SCEN` at +0x37c. Nothing in this repo shows whether that body carries the
+  channel-name fields. Settle it by decoding a captured scene body and looking for
+  the fixed-width name strings `CNQ` returns. If they are in there, a passive tap
+  can recover names without the control port and this tool narrows to the patch
+  join alone.
+- **UNVERIFIED — the key contract with reac-aes67.** The join emits the desk's own
+  token verbatim (`RAI1`, `RAO1`, one-based). Whether reac-aes67 keys its AES67
+  channels by the same token and the same base cannot be tested from this repo.
+  Settle it with a joint run: a known patch in, a labelled stream out, names
+  landing on the expected channels.
 
 ## References
 
