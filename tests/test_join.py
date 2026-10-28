@@ -4,7 +4,7 @@
 """Tests for the slot->name join (the core value).
 
 PIS gives channel->slot (I22 -> RAI22); CNS gives channel->name. We invert+join
-to slot->name so reac-aes67 can label the AES67 channel for REAC slot N.
+to slot->name so the AES67 bridge can label the AES67 channel for REAC slot N.
 """
 import unittest
 from reaclabel.join import LabelJoin

@@ -5,8 +5,8 @@
 
 The mixer exposes channel->slot (PIS: I22 -> RAI22) and channel->name
 (CNS: I1 -> "Kick"). We invert and join into slot->name, keyed on the
-RAI<n>/RAO<n> token, which is exactly the REAC slot index reac-aes67's passive
-tap keys on. Pure: feed it observed values, read the table.
+RAI<n>/RAO<n> token, which is exactly the REAC slot index the AES67 bridge's
+passive tap keys on. Pure: feed it observed values, read the table.
 """
 
 

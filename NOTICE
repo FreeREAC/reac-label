@@ -4,7 +4,7 @@ Copyright (C) 2026 Pau Aliagas <linuxnow@gmail.com>
 Licensed under GPL-3.0-or-later (see LICENSE).
 
 reac-label queries a Roland V-Mixer over its remote-control protocol and builds
-a REAC-slot -> channel-name table for reac-aes67.
+a REAC-slot -> channel-name table for FreeREAC's AES67 bridge.
 
 ## Third-party code and references
 
