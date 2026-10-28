@@ -1,8 +1,8 @@
 # reac-label
 
-Read-only **labeller** for [`reac-aes67`](https://github.com/FreeREAC/reac-aes67):
+Read-only **labeller** for FreeREAC's AES67 bridge (in preparation, not yet public):
 queries a Roland **V-Mixer** over its remote-control protocol (TCP 8023) and
-builds a **REAC-slot → channel-name** table, so the AES67 channels reac-aes67
+builds a **REAC-slot → channel-name** table, so the AES67 channels the bridge
 emits show the desk's names ("Bass") instead of bare slot numbers.
 
 It supplies what the passive REAC tap does not decode — the slot↔channel↔name
@@ -17,8 +17,8 @@ The Roland protocol exposes read ("Q") queries that return ("S") replies:
 
 - `CNQ:I1;` → `CNS:I1,"Kick  ";` — channel **name**
 - `PIQ:I22;` → `PIS:I22,RAI22;` — **input patch**: channel 22 is fed from REAC A
-  input slot 22. That `RAI`/`RAO` token **is** the REAC slot index the reac-aes67
-  tap keys on.
+  input slot 22. That `RAI`/`RAO` token **is** the REAC slot index the bridge's
+  passive tap keys on.
 
 reac-label joins `channel→slot` (PIQ) with `channel→name` (CNQ), inverted, into
 **slot→name** — landing the label on the correct AES67 channel.
@@ -28,7 +28,7 @@ mixer (TCP 8023)
   → proto    pure: frame a query, parse a reply (STX/telnet, ERR, OK)
   → client   thin socket: connect, line I/O, queries
   → join     pure: CNS + PIS  ->  slot_to_name (keyed RAIn/RAOn)
-  → CLI/JSON slot->name table for reac-aes67 to stamp on the AES67 labels
+  → CLI/JSON slot->name table for the bridge to stamp on the AES67 labels
 ```
 
 ## Where this fits
@@ -80,7 +80,7 @@ python3 -m reaclabel --sim --probe   # VRQ/CNQ/PIQ sample replies
 # older V-Mixers need a serial<->TCP bridge / VMXProxy):
 python3 -m reaclabel --host <mixer_ip> --probe
 
-# full scan -> JSON for reac-aes67 to read:
+# full scan -> JSON for the AES67 bridge to read:
 python3 -m reaclabel --host <mixer_ip> --model m480 --outputs 40 --json slots.json
 ```
 
@@ -106,8 +106,8 @@ empty, so every channel looks unpatched.
   the fixed-width name strings `CNQ` returns. If they are in there, a passive tap
   can recover names without the control port and this tool narrows to the patch
   join alone.
-- **UNVERIFIED — the key contract with reac-aes67.** The join emits the desk's own
-  token verbatim (`RAI1`, `RAO1`, one-based). Whether reac-aes67 keys its AES67
+- **UNVERIFIED — the key contract with the AES67 bridge.** The join emits the desk's
+  own token verbatim (`RAI1`, `RAO1`, one-based). Whether the bridge keys its AES67
   channels by the same token and the same base cannot be tested from this repo.
   Settle it with a joint run: a known patch in, a labelled stream out, names
   landing on the expected channels.
