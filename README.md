@@ -76,8 +76,7 @@ python3 -m reaclabel --sim --probe   # VRQ/CNQ/PIQ sample replies
 ## Against a real mixer
 
 ```sh
-# confirm transport/model first (M-200i telnet must be enabled in its LAN menu;
-# older V-Mixers need a serial<->TCP bridge / VMXProxy):
+# confirm transport/model first (M-200i telnet must be enabled in its LAN menu):
 python3 -m reaclabel --host <mixer_ip> --probe
 
 # full scan -> JSON for the AES67 bridge to read:
